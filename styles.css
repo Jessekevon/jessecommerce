@@ -90,3 +90,85 @@ body {
 .add-to-cart:hover {
   background-color: #0056b3;
 }
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+}
+
+.navbar-logo {
+  font-size: 1.5rem;
+}
+
+.navbar-icons {
+  display: flex;
+  align-items: center;
+}
+
+.hamburger-icon {
+  display: none; /* Hide by default */
+  cursor: pointer;
+}
+
+.bar {
+  width: 25px;
+  height: 3px;
+  background-color: white;
+  margin: 4px 0;
+}
+
+.cart-icon {
+  position: relative;
+  margin-left: 20px;
+  cursor: pointer;
+}
+
+.cart-indicator {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+/* Add responsive styles for the hamburger icon */
+@media (max-width: 768px) {
+  .hamburger-icon {
+    display: block;
+  }
+  
+  .navbar-icons {
+    display: none;
+  }
+}
+
+.cart-popup {
+  display: none;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background-color: white;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: opacity 0.3s, transform 0.3s;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.cart-popup.show {
+  opacity: 1;
+  transform: translateY(0);
+}

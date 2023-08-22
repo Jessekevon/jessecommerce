@@ -6,14 +6,57 @@ import { addToCart, removeFromCart, getCart } from './cart.js';
 const productGrid = document.querySelector('.product-grid');
 const categoryFilter = document.getElementById('category-filter');
 const cartContainer = document.getElementById('cart-container');
+const cartIcon = document.getElementById('cart-icon');
+const cartIndicator = document.getElementById('cart-indicator');
+const cartPopup = document.getElementById('cart-popup');
+const hamburgerIcon = document.getElementById('hamburger-icon');
+
+let isCartPopupOpen = false;
+let products = [];
 
 categoryFilter.addEventListener('change', renderProducts);
 
-async function renderProducts() {
-  const products = await fetchProducts();
-  const productGrid = document.querySelector('.product-grid');
+hamburgerIcon.addEventListener('click', () => {
+  // Implement logic to toggle navigation menu for mobile
+});
 
-  products.forEach(product => {
+cartIcon.addEventListener('click', () => {
+  isCartPopupOpen = !isCartPopupOpen;
+  cartPopup.style.display = isCartPopupOpen ? 'block' : 'none';
+  cartPopup.classList.toggle('show', isCartPopupOpen);
+  showCartPopup(getCart());
+});
+
+// Define a function to handle adding products to cart
+function handleAddToCartClick(event) {
+  const target = event.target;
+
+  if (target.classList.contains('add-to-cart')) {
+    const productId = parseInt(target.getAttribute('data-product-id'));
+    const product = products.find(item => item.id === productId);
+
+    if (product) {
+      const selectedQuantity = parseInt(target.parentNode.querySelector('.quantity-select').value);
+      addToCart(product, selectedQuantity);
+      renderCart();
+    }
+  }
+}
+
+// Attach the event listener to the entire product grid
+productGrid.addEventListener('click', handleAddToCartClick);
+
+async function renderProducts() {
+  const selectedCategory = categoryFilter.value;
+  
+  // Filter products based on selected category
+  const filteredProducts = selectedCategory === 'all'
+    ? products
+    : products.filter(product => product.category === selectedCategory);
+  
+  productGrid.innerHTML = '';
+
+  filteredProducts.forEach(product => {
     const productCard = document.createElement('div');
     productCard.classList.add('product-card');
 
@@ -53,7 +96,7 @@ async function renderProducts() {
       Array.from({ length: selectedQuantity }, () => addToCart(product));
       renderCart();
     });
-    
+
     productCard.appendChild(productImage);
     productCard.appendChild(productName);
     productCard.appendChild(productPrice);
@@ -65,6 +108,7 @@ async function renderProducts() {
 }
 
 async function init() {
+  products = await fetchProducts(); // Fetch products and store them in the products array
   renderProducts();
   renderCart();
 }
@@ -94,6 +138,26 @@ function renderCart() {
 
     cartContainer.appendChild(cartItem);
   });
+
+  updateCartIndicator(cartItems.length);
+  showCartPopup(cartItems);
+}
+
+function updateCartIndicator(itemCount) {
+  cartIndicator.textContent = itemCount;
+}
+
+function showCartPopup(cartItems) {
+  cartPopup.innerHTML = '';
+
+  cartItems.forEach(item => {
+    const cartItem = document.createElement('div');
+    cartItem.classList.add('cart-item');
+    // Populate cart item details and append to cartPopup
+    cartPopup.appendChild(cartItem);
+  });
+
+  cartPopup.classList.toggle('show', isCartPopupOpen);
 }
 
 productGrid.addEventListener('click', event => {
@@ -104,7 +168,8 @@ productGrid.addEventListener('click', event => {
     const product = products.find(item => item.id === productId);
 
     if (product) {
-      addToCart(product);
+      const selectedQuantity = parseInt(target.parentNode.querySelector('.quantity-select').value);
+      addToCart(product, selectedQuantity);
       renderCart();
     }
   }
